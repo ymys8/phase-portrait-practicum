@@ -1,11 +1,22 @@
 #include "mainwindow.h"
+#include "linear_oscillator_system.h"
 #include "ui_mainwindow.h"
 
+#include <QStandardItemModel>
+#include <QMessageBox>
+
+const auto TASK_TYPE_ROLE = Qt::UserRole;
+Q_DECLARE_METATYPE(ETaskWindowType)
+
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    initTaskList();
+    initTextList();
+
+    connect(ui->listTask, &QListView::doubleClicked, this, &MainWindow::showTaskWindow);
 }
 
 MainWindow::~MainWindow()
@@ -13,3 +24,68 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::showTaskWindow(const QModelIndex &index)
+{
+    if (!index.isValid())
+        return;
+
+    auto type = index.data(TASK_TYPE_ROLE).value<ETaskWindowType>();
+
+    if (actualWindows.contains(type))
+    {
+        QPointer<TaskWindow> window = actualWindows[type];
+        if (!window.isNull())
+        {
+            window->raise();
+            window->activateWindow();
+            return;
+        }
+        else
+        {
+            actualWindows.remove(type);
+        }
+    }
+
+    QPointer<TaskWindow> window = createTaskWindow(type);
+    if (window == nullptr)
+    {
+        QMessageBox::critical(this, "Ошибка при создании окна с заданием", 
+                                tr("Невозможно создать задание: %1").arg(index.data(Qt::DisplayRole).toString()));
+        return;
+    }
+    actualWindows.insert(type, window);
+    window->show();
+}
+
+void MainWindow::initTaskList()
+{
+    QStandardItemModel *model = new QStandardItemModel();
+    ui->listTask->setModel(model);
+
+    auto appendTaskRow = [model](const QString &name, ETaskWindowType type)
+    {
+        QStandardItem* item = new QStandardItem(name);
+        model->appendRow(item);
+        model->setData(model->index(model->rowCount() - 1, 0), QVariant::fromValue(type), TASK_TYPE_ROLE);
+    };
+
+    appendTaskRow("Линейная колебательная система", ETaskWindowType::LOS);
+}
+
+void MainWindow::initTextList() {}
+
+QPointer<TaskWindow> MainWindow::createTaskWindow(ETaskWindowType windowType)
+{
+    QPointer<TaskWindow> resPtr;
+
+    switch (windowType)
+    {
+        case ETaskWindowType::LOS:
+            resPtr = new los::LinearOscillatorSystemWindow;
+            break;
+        default:
+            return nullptr;
+    }
+
+    return resPtr;
+}

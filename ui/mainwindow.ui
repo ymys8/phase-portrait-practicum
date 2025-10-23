@@ -20,8 +20,12 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QListView" name="listView"/>
-      <widget class="QListView" name="listView_2"/>
+      <widget class="QListView" name="listTask">
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+      </widget>
+      <widget class="QListView" name="listText"/>
      </widget>
     </item>
    </layout>

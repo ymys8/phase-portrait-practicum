@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.24)
 
 project(practicum-phisics VERSION 0.1 LANGUAGES CXX)
 
@@ -13,20 +13,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_PREFIX_PATH "C:/Qt/6.3.0/mingw_64/lib/cmake")
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets PrintSupport)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets PrintSupport)
 
 set(PROJECT_SOURCES
     # cpp
     src/main.cpp
     src/mainwindow.cpp
+    src/linear_oscillator_system.cpp
+    3rd_party/qcustomplot.cpp
 
     # headers
     src/mainwindow.h
+    src/taskwindow.h
+    src/linear_oscillator_system.h
+    3rd_party/qcustomplot.h
 )
 
 set(FORMS
     ui/mainwindow.ui
+    ui/linear_oscillator_system.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -36,22 +42,25 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${FORMS}
     )
 else()
-    if(ANDROID)
-        add_library(${PROJECT_NAME} SHARED
-            ${PROJECT_SOURCES}
-        )
-    else()
-        add_executable(${PROJECT_NAME}
-            ${PROJECT_SOURCES}
-        )
-    endif()
+    add_executable(${PROJECT_NAME}
+        ${PROJECT_SOURCES}
+        ${FORMS}
+    )
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/ui"
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src,
+    ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::PrintSupport
+)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -60,6 +69,14 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
+
+if (MSVC)
+    target_compile_options(${PROJECT_NAME} PUBLIC 
+        "/Zc:__cplusplus"
+        "/permissive-"
+        "/utf-8"
+    )
+endif()
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(${PROJECT_NAME})
