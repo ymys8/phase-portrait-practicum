@@ -3,6 +3,16 @@
 
 #include <QMainWindow>
 
+#include <QListWidget>
+#include <QDir>
+#include <QStringList>
+#include <iostream>
+#include <QDebug>
+#include <QStringListModel>
+#include <memory>
+#include <QDesktopServices>
+#include <QUrl>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -17,5 +27,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+    void initTextList();
 };
 #endif // MAINWINDOW_H
