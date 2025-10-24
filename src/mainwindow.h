@@ -6,8 +6,6 @@
 #include <QListWidget>
 #include <QDir>
 #include <QStringList>
-#include <iostream>
-#include <QDebug>
 #include <QStringListModel>
 #include <memory>
 #include <QDesktopServices>
