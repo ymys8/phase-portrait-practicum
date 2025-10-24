@@ -2,10 +2,15 @@
 #include "linear_oscillator_system.h"
 #include "ui_mainwindow.h"
 
+#include <QDesktopServices>
+#include <QUrl>
+#include <QDir>
 #include <QStandardItemModel>
+#include <QStringListModel>
 #include <QMessageBox>
 
 const auto TASK_TYPE_ROLE = Qt::UserRole;
+const QString DOCS_PATH = "../documents";
 Q_DECLARE_METATYPE(ETaskWindowType)
 
 MainWindow::MainWindow(QWidget *parent)
@@ -17,6 +22,10 @@ MainWindow::MainWindow(QWidget *parent)
     initTextList();
 
     connect(ui->listTask, &QListView::doubleClicked, this, &MainWindow::showTaskWindow);
+    connect(ui->listDocs, &QListView::doubleClicked, [](const QModelIndex &index) {
+        QString fileName = index.data().toString();
+        QDesktopServices::openUrl(QUrl::fromLocalFile(DOCS_PATH + "\\" + fileName));
+    });
 }
 
 MainWindow::~MainWindow()
@@ -59,7 +68,7 @@ void MainWindow::showTaskWindow(const QModelIndex &index)
 
 void MainWindow::initTaskList()
 {
-    QStandardItemModel *model = new QStandardItemModel();
+    QStandardItemModel *model = new QStandardItemModel(this);
     ui->listTask->setModel(model);
 
     auto appendTaskRow = [model](const QString &name, ETaskWindowType type)
@@ -72,7 +81,15 @@ void MainWindow::initTaskList()
     appendTaskRow("Линейная колебательная система", ETaskWindowType::LOS);
 }
 
-void MainWindow::initTextList() {}
+void MainWindow::initTextList()
+{
+    QDir dir(DOCS_PATH);
+    QStringList files = dir.entryList({"*.doc", "*.docx"}, QDir::Files, QDir::Name);
+
+    auto model = new QStringListModel(this);
+    model->setStringList(files);
+    ui->listDocs->setModel(model);
+}
 
 QPointer<TaskWindow> MainWindow::createTaskWindow(ETaskWindowType windowType)
 {

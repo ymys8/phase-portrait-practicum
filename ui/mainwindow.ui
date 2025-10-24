@@ -25,7 +25,11 @@
         <set>QAbstractItemView::NoEditTriggers</set>
        </property>
       </widget>
-      <widget class="QListView" name="listText"/>
+      <widget class="QListView" name="listDocs">
+       <property name="editTriggers">
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
