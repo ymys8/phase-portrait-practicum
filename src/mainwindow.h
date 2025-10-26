@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QCloseEvent>
 #include <QMainWindow>
 #include <QPointer>
 
@@ -29,6 +30,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     /// Деструктор
     ~MainWindow();
+
+protected:
+    /// Закрытие окон с заданиями при закрытии основного окна
+    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     /// Показать окно задания

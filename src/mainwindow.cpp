@@ -33,6 +33,18 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    for(auto task : actualWindows) {
+        if (!task.isNull())
+        {
+            task->close();
+        }
+    }
+    
+    event->accept();
+}
+
 void MainWindow::showTaskWindow(const QModelIndex &index)
 {
     if (!index.isValid())
