@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "linear_oscillator_system.h"
+#include "modernized_relay_scheme.h"
 #include "ui_mainwindow.h"
 
 #include <QDesktopServices>
@@ -91,6 +92,7 @@ void MainWindow::initTaskList()
     };
 
     appendTaskRow("Линейная колебательная система", ETaskWindowType::LOS);
+    appendTaskRow("Модернизированная схема Рэлея", ETaskWindowType::MRS);
 }
 
 void MainWindow::initTextList()
@@ -111,6 +113,9 @@ QPointer<TaskWindow> MainWindow::createTaskWindow(ETaskWindowType windowType)
     {
         case ETaskWindowType::LOS:
             resPtr = new los::LinearOscillatorSystemWindow;
+            break;
+        case ETaskWindowType::MRS:
+            resPtr = new mrs::ModernizedRelaySchemeWindow;
             break;
         default:
             return nullptr;

@@ -24,18 +24,21 @@ set(PROJECT_SOURCES
     src/main.cpp
     src/mainwindow.cpp
     src/linear_oscillator_system.cpp
+    src/modernized_relay_scheme.cpp
     3rd_party/qcustomplot.cpp
 
     # headers
     src/mainwindow.h
     src/taskwindow.h
     src/linear_oscillator_system.h
+    src/modernized_relay_scheme.h
     3rd_party/qcustomplot.h
 )
 
 set(FORMS
     ui/mainwindow.ui
     ui/linear_oscillator_system.ui
+    ui/modernized_relay_scheme.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
