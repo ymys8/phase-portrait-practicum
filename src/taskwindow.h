@@ -1,5 +1,6 @@
 #pragma once
 
+#include "qcustomplot.h"
 #include <QMainWindow>
 
 /// Абстракстный класс для всех виджетов с заданием

@@ -7,9 +7,6 @@ namespace Ui
     class LinearOscillatorSystemWindow;
 }
 
-class QCustomPlot;
-class QCPCurve;
-
 namespace los
 {
 

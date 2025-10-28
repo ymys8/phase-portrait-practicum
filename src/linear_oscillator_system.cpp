@@ -1,5 +1,4 @@
 #include "linear_oscillator_system.h"
-#include "qcustomplot.h"
 #include "ui_linear_oscillator_system.h"
 
 using namespace los;
