@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "linear_oscillator_system.h"
+#include "osc_2nd_deg_free.h"
 #include "ui_mainwindow.h"
 
 #include <QDesktopServices>
@@ -91,6 +92,7 @@ void MainWindow::initTaskList()
     };
 
     appendTaskRow("Линейная колебательная система", ETaskWindowType::LOS);
+    appendTaskRow("Колебания 2 степени свободы", ETaskWindowType::O2DF);
 }
 
 void MainWindow::initTextList()
@@ -111,6 +113,9 @@ QPointer<TaskWindow> MainWindow::createTaskWindow(ETaskWindowType windowType)
     {
         case ETaskWindowType::LOS:
             resPtr = new los::LinearOscillatorSystemWindow;
+            break;
+        case ETaskWindowType::O2DF:
+            resPtr = new o2df::Osc2ndDegFree;
             break;
         default:
             return nullptr;
