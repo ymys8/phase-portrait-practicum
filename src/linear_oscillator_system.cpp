@@ -57,9 +57,9 @@ void LinearOscillatorSystemWindow::redrawPlots()
     }
 
     ui->linearOscillatorPlot->graph(0)->setData(tValues, xValues);
-    redrawPlot(ui->linearOscillatorPlot, tValues, xValues);
+    redrawPlot(ui->linearOscillatorPlot);
     phasePortraitCurve->setData(xValues, yValues);
-    redrawPlot(ui->phasePortretPlot, xValues, yValues);
+    redrawPlot(ui->phasePortretPlot);
 }
 
 void LinearOscillatorSystemWindow::initUI()
@@ -109,10 +109,4 @@ Parameters LinearOscillatorSystemWindow::getParametersFromUI() const
     result.k = ui->sbK->value();
 
     return result;
-}
-
-void LinearOscillatorSystemWindow::redrawPlot(QCustomPlot *plot, const Vector &xAxisPoints, const Vector &yAxisPoints)
-{
-    plot->rescaleAxes();
-    plot->replot();
 }

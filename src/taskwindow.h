@@ -19,4 +19,11 @@ public:
 protected:
     /// Инициализация параметров пользовательского интерфейса
     virtual void initUI() = 0;
+
+    /// Перерисовать график
+    void redrawPlot(QCustomPlot *plot)
+    {
+        plot->rescaleAxes();
+        plot->replot();
+    }
 };
