@@ -28,7 +28,7 @@ struct Parameters
     double h;
 };
 
-/// 
+/// Класс окна для колебаний 2 степени свободы
 class Osc2ndDegFree : public TaskWindow
 {
     Q_OBJECT
@@ -40,8 +40,8 @@ public:
     ~Osc2ndDegFree();
 
 private slots:
-    /// Запустить отрисовку графиков
-    void startPaintPlots();
+    /// Перерисовать графики
+    void redrawPlots();
 
 private:
     /// Инициализировать ui окна
@@ -51,14 +51,17 @@ private:
     /// Инициализировать график y(t)
     void initYCurve(QCPCurve **yCurve, QCustomPlot *plot);
 
+    /// Запустить отрисовку графиков
+    void animatePlots(const QVector<double> &tValues, const QVector<double> &xValues, const QVector<double> &yValues);
+
     /// Получить параметры из gui
     void setParametersFromUI();
-    ///
+    /// Очистить графики
     void clearPlots();
     
-    ///
+    /// Получить x3 (x1')
     double dx3dt(double t, double x1, double x2) const;
-    /// 
+    /// Получить x4 (x2')
     double dx4dt(double t, double x1, double x2) const;
 
     Ui::Osc2ndDegFree *ui;   ///< Форма

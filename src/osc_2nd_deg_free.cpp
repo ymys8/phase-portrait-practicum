@@ -14,19 +14,18 @@ Osc2ndDegFree::~Osc2ndDegFree()
     delete ui;
 }
 
-void Osc2ndDegFree::startPaintPlots()
+void Osc2ndDegFree::redrawPlots()
 {
     clearPlots();
     setParametersFromUI();
     
     double t = 0;
     double x1 = param.x1, x2 = param.x2, x3 = param.x3, x4 = param.x4;
-    
-    xtCurve->addData(t, x1);
-    xtCurve2->addData(t, x1);
-    ytCurve->addData(t, x2);
-    ytCurve2->addData(t, x2);
-    yxCurve->addData(x1, x2);
+
+    QVector<double> tValues = {0}, xValues = {x1}, yValues = {x2};
+    tValues.reserve(param.k);
+    xValues.reserve(param.k);
+    yValues.reserve(param.k);
 
     for (uint i = 1; i < param.k; ++i) 
     {   
@@ -62,22 +61,12 @@ void Osc2ndDegFree::startPaintPlots()
         
         // Сохранение результатов
         t += param.h;
-        xtCurve->addData(t, x1);
-        xtCurve2->addData(t, x1);
-        ytCurve->addData(t, x2);
-        ytCurve2->addData(t, x2);
-        yxCurve->addData(x1, x2);
-
-        // redrawPlot(ui->plotTX);
-        // redrawPlot(ui->plotTY);
-        // redrawPlot(ui->plotTXY);
-        // redrawPlot(ui->plotXY);
+        tValues.append(t);
+        xValues.append(x1);
+        yValues.append(x2);
     }
 
-    redrawPlot(ui->plotTX);
-    redrawPlot(ui->plotTY);
-    redrawPlot(ui->plotTXY);
-    redrawPlot(ui->plotXY);
+    animatePlots(tValues, xValues, yValues);
 }
 
 void Osc2ndDegFree::initUI()
@@ -90,7 +79,15 @@ void Osc2ndDegFree::initUI()
     yxCurve = new QCPCurve(ui->plotXY->xAxis, ui->plotXY->yAxis);
     yxCurve->setPen(QPen(Qt::blue));
 
-    connect(ui->pbCalc, &QPushButton::clicked, this, &Osc2ndDegFree::startPaintPlots);
+    ui->plotTX->xAxis->setLabel("t");
+    ui->plotTX->yAxis->setLabel("x");
+    ui->plotTY->xAxis->setLabel("t");
+    ui->plotTY->yAxis->setLabel("y");
+    ui->plotTXY->xAxis->setLabel("t");
+    ui->plotXY->xAxis->setLabel("x");
+    ui->plotXY->yAxis->setLabel("y");
+
+    connect(ui->pbCalc, &QPushButton::clicked, this, &Osc2ndDegFree::redrawPlots);
 }
 
 void Osc2ndDegFree::initXCurve(QCPCurve **xCurve, QCustomPlot *plot)
@@ -105,6 +102,40 @@ void Osc2ndDegFree::initYCurve(QCPCurve **yCurve, QCustomPlot *plot)
     // Создаем объект кривой
     *yCurve = new QCPCurve(plot->xAxis, plot->yAxis);
     (*yCurve)->setPen(QPen(Qt::darkGreen));
+}
+
+void Osc2ndDegFree::animatePlots(const QVector<double> &tValues, const QVector<double> &xValues, const QVector<double> &yValues)
+{
+    double x_min = *std::min_element(xValues.begin(), xValues.end());
+    double x_max = *std::max_element(xValues.begin(), xValues.end());
+    double y_min = *std::min_element(yValues.begin(), yValues.end());
+    double y_max = *std::max_element(yValues.begin(), yValues.end());
+    double t_max = *std::max_element(tValues.begin(), tValues.end());
+
+    ui->plotTX->xAxis->setRange(0, t_max);
+    ui->plotTX->yAxis->setRange(x_min, x_max);
+    
+    ui->plotTY->xAxis->setRange(0, t_max);
+    ui->plotTY->yAxis->setRange(y_min, y_max);
+    
+    ui->plotTXY->xAxis->setRange(0, t_max);
+    ui->plotTXY->yAxis->setRange(y_min < x_min ? y_min : x_min, y_max > x_max ? y_max : x_max);
+
+    ui->plotXY->xAxis->setRange(x_min, x_max);
+    ui->plotXY->yAxis->setRange(y_min, y_max);
+    for (uint i = 0; i < tValues.size(); ++i)
+    {
+        xtCurve->addData(tValues[i], xValues[i]);
+        xtCurve2->addData(tValues[i], xValues[i]);
+        ytCurve->addData(tValues[i], yValues[i]);
+        ytCurve2->addData(tValues[i], yValues[i]);
+        yxCurve->addData(xValues[i], yValues[i]);
+
+        ui->plotTX->replot();
+        ui->plotTY->replot();
+        ui->plotTXY->replot();
+        ui->plotXY->replot();
+    }
 }
 
 void Osc2ndDegFree::setParametersFromUI()
