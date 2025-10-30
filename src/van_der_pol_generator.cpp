@@ -1,6 +1,12 @@
+// ============================================================================
+// ИСПРАВЛЕННАЯ ВЕРСИЯ: van_der_pol_generator.cpp
+// Правый график (фазовый портрет): используется QCPCurve + стабилизация
+// Левый график (временной): используется QCPGraph + стабилизация
+// ============================================================================
 #include "van_der_pol_generator.h"
 #include "qcustomplot.h"
 #include "ui_van_der_pol_generator.h"
+#include <cmath>
 
 using namespace vdp;
 
@@ -26,8 +32,8 @@ void VanDerPolGeneratorWindow::redrawPlots()
     Vector tValues, xValues, yValues;
 
     // Проверка ограничений
-    if (param.a2 <= 0) {
-        QMessageBox::warning(this, "Ошибка", "A2 должен быть > 0");
+    if (param.a2 < 0) {
+        QMessageBox::warning(this, "Ошибка", "A2 должен быть >= 0");
         return;
     }
     if (param.a3 < 0.1 || param.a3 > 10) {
@@ -35,87 +41,87 @@ void VanDerPolGeneratorWindow::redrawPlots()
         return;
     }
 
-    // Метод Рунге-Кутты 4-го порядка для модифицированного генератора Ван-дер-Поля
-    double t = 0;
-    double x = param.x0;  // начальное положение
-    double y = param.y0;  // начальная скорость (x')
+    double t = 0.0;
+    double x = param.x0;
+    double y = param.y0;
 
-    // Уравнение: x'' - A1*(1 - x²)*x' + x = A2*cos(A3*t)
-    // Система:
-    // x' = y
-    // y' = A1*(1 - x²)*y - x + A2*cos(A3*t)
-
-    // Предварительное вычисление для стабилизации
+    // ============================================================================
+    // ШАГ 1: Стабилизация (пропускаем переходный процесс)
+    // Это необходимо для обоих графиков!
+    // ============================================================================
     int stabilizationSteps = 1000;
     for (int i = 0; i < stabilizationSteps; ++i)
     {
-        // Система уравнений:
-        // dx/dt = v
-        // dv/dt = A1*(1 - x²)*v - x + A2*cos(A3*t)
-        
         double k1x = param.h * y;
         double k1y = param.h * (param.a1 * (1.0 - x*x) * y - x + param.a2 * std::cos(param.a3 * t));
 
         double k2x = param.h * (y + 0.5 * k1y);
-        double k2y = param.h * (param.a1 * (1.0 - (x + 0.5*k1x)*(x + 0.5*k1x)) * (y + 0.5*k1y) 
-                                - (x + 0.5*k1x) + param.a2 * std::cos(param.a3 * (t + 0.5*param.h)));
+        double k2y = param.h * (param.a1 * (1.0 - (x + 0.5*k1x)*(x + 0.5*k1x)) * (y + 0.5*k1y)
+                      - (x + 0.5*k1x) + param.a2 * std::cos(param.a3 * (t + 0.5*param.h)));
 
         double k3x = param.h * (y + 0.5 * k2y);
-        double k3y = param.h * (param.a1 * (1.0 - (x + 0.5*k2x)*(x + 0.5*k2x)) * (y + 0.5*k2y) 
-                                - (x + 0.5*k2x) + param.a2 * std::cos(param.a3 * (t + 0.5*param.h)));
+        double k3y = param.h * (param.a1 * (1.0 - (x + 0.5*k2x)*(x + 0.5*k2x)) * (y + 0.5*k2y)
+                      - (x + 0.5*k2x) + param.a2 * std::cos(param.a3 * (t + 0.5*param.h)));
 
         double k4x = param.h * (y + k3y);
-        double k4y = param.h * (param.a1 * (1.0 - (x + k3x)*(x + k3x)) * (y + k3y) 
-                                - (x + k3x) + param.a2 * std::cos(param.a3 * (t + param.h)));
+        double k4y = param.h * (param.a1 * (1.0 - (x + k3x)*(x + k3x)) * (y + k3y)
+                      - (x + k3x) + param.a2 * std::cos(param.a3 * (t + param.h)));
 
         x = x + (k1x + 2.0*k2x + 2.0*k3x + k4x) / 6.0;
         y = y + (k1y + 2.0*k2y + 2.0*k3y + k4y) / 6.0;
         t += param.h;
     }
 
-    // Основное вычисление для построения графиков
-    t = 0;
-    x = param.x0;
-    y = param.y0;
-    
+    // ============================================================================
+    // ШАГ 2: Основное вычисление (НЕ сбрасываем x, y, t!)
+    // Продолжаем со стабилизированных значений
+    // ============================================================================
     for (int i = 0; i <= param.k; ++i)
     {
         tValues.append(t);
         xValues.append(x);
         yValues.append(y);
 
-        // Система уравнений:
-        // dx/dt = v
-        // dv/dt = A1*(1 - x²)*v - x + A2*cos(A3*t)
-        
+        // Проверка на численные ошибки
+        if (!std::isfinite(x) || !std::isfinite(y)) {
+            break;
+        }
+
         double k1x = param.h * y;
         double k1y = param.h * (param.a1 * (1.0 - x*x) * y - x + param.a2 * std::cos(param.a3 * t));
 
         double k2x = param.h * (y + 0.5 * k1y);
-        double k2y = param.h * (param.a1 * (1.0 - (x + 0.5*k1x)*(x + 0.5*k1x)) * (y + 0.5*k1y) 
-                                - (x + 0.5*k1x) + param.a2 * std::cos(param.a3 * (t + 0.5*param.h)));
+        double k2y = param.h * (param.a1 * (1.0 - (x + 0.5*k1x)*(x + 0.5*k1x)) * (y + 0.5*k1y)
+                      - (x + 0.5*k1x) + param.a2 * std::cos(param.a3 * (t + 0.5*param.h)));
 
         double k3x = param.h * (y + 0.5 * k2y);
-        double k3y = param.h * (param.a1 * (1.0 - (x + 0.5*k2x)*(x + 0.5*k2x)) * (y + 0.5*k2y) 
-                                - (x + 0.5*k2x) + param.a2 * std::cos(param.a3 * (t + 0.5*param.h)));
+        double k3y = param.h * (param.a1 * (1.0 - (x + 0.5*k2x)*(x + 0.5*k2x)) * (y + 0.5*k2y)
+                      - (x + 0.5*k2x) + param.a2 * std::cos(param.a3 * (t + 0.5*param.h)));
 
         double k4x = param.h * (y + k3y);
-        double k4y = param.h * (param.a1 * (1.0 - (x + k3x)*(x + k3x)) * (y + k3y) 
-                                - (x + k3x) + param.a2 * std::cos(param.a3 * (t + param.h)));
+        double k4y = param.h * (param.a1 * (1.0 - (x + k3x)*(x + k3x)) * (y + k3y)
+                      - (x + k3x) + param.a2 * std::cos(param.a3 * (t + param.h)));
 
         x = x + (k1x + 2.0*k2x + 2.0*k3x + k4x) / 6.0;
         y = y + (k1y + 2.0*k2y + 2.0*k3y + k4y) / 6.0;
         t += param.h;
     }
 
-    // Обновление графиков
+    // ============================================================================
+    // ОБНОВЛЕНИЕ ГРАФИКОВ
+    // ============================================================================
+
+    // ЛЕВЫЙ график: x(t) - используем QCPGraph (обычная линия)
     ui->oscillatorPlot->graph(0)->setData(tValues, xValues);
     redrawPlot(ui->oscillatorPlot, tValues, xValues);
-    
-    // Для фазового портрета используем QCPGraph вместо QCPCurve для лучшего отображения
-    ui->phasePortretPlot->graph(0)->setData(xValues, yValues);
+
+    // ПРАВЫЙ график: фазовый портрет y(x) - используем QCPCurve (гладкая кривая)
+    if (phasePortraitCurve) {
+        phasePortraitCurve->setData(xValues, yValues);
+    }
     redrawPlot(ui->phasePortretPlot, xValues, yValues);
 }
+
 
 void VanDerPolGeneratorWindow::initUI()
 {
@@ -129,31 +135,26 @@ void VanDerPolGeneratorWindow::initUI()
     ui->dsbA2->setValue(5.0);
     ui->dsbA3->setValue(5.0);
     ui->dsbH->setValue(0.01);
-    ui->sbK->setValue(10000); // больше точек для гладкого графика
+    ui->sbK->setValue(10000);
 
     connect(ui->pbCalc, &QPushButton::clicked, this, &VanDerPolGeneratorWindow::redrawPlots);
 }
 
 void VanDerPolGeneratorWindow::initOscillatorPlot()
 {
-    // Настройка осей и заголовка
+    // Настройка ЛЕВОГО графика x(t)
     ui->oscillatorPlot->xAxis->setLabel("t");
     ui->oscillatorPlot->yAxis->setLabel("x");
-    ui->oscillatorPlot->xAxis->setRange(0, 100);
-    ui->oscillatorPlot->yAxis->setRange(-3, 3);
     ui->oscillatorPlot->plotLayout()->insertRow(0);
-    ui->oscillatorPlot->plotLayout()->addElement(0, 0, new QCPTextElement(ui->oscillatorPlot, "Модифицированный генератор Ван-дер-Поля: x(t)"));
+    ui->oscillatorPlot->plotLayout()->addElement(0, 0, 
+        new QCPTextElement(ui->oscillatorPlot, "Модифицированный генератор Ван-дер-Поля: x(t)"));
 
-    // Добавление графика
+    // Добавление графика QCPGraph
     ui->oscillatorPlot->addGraph();
-    ui->oscillatorPlot->graph(0)->setPen(QPen(Qt::red));
+    ui->oscillatorPlot->graph(0)->setPen(QPen(Qt::red, 1.5));
     ui->oscillatorPlot->graph(0)->setLineStyle(QCPGraph::lsLine);
 
-    // Включение взаимодействия
     ui->oscillatorPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    
-    // Подключение обработчика колеса мыши для более плавного масштабирования
-    connect(ui->oscillatorPlot, &QCustomPlot::mouseWheel, this, &VanDerPolGeneratorWindow::onOscillatorMouseWheel);
 }
 
 void VanDerPolGeneratorWindow::initPhasePortretPlot()
@@ -161,21 +162,20 @@ void VanDerPolGeneratorWindow::initPhasePortretPlot()
     // Настройка осей и заголовка
     ui->phasePortretPlot->xAxis->setLabel("x");
     ui->phasePortretPlot->yAxis->setLabel("y");
-    ui->phasePortretPlot->xAxis->setRange(-3, 3);
-    ui->phasePortretPlot->yAxis->setRange(-3, 3);
+    ui->phasePortretPlot->xAxis->setRange(-4, 4);
+    ui->phasePortretPlot->yAxis->setRange(-5, 5);
     ui->phasePortretPlot->plotLayout()->insertRow(0);
-    ui->phasePortretPlot->plotLayout()->addElement(0, 0, new QCPTextElement(ui->phasePortretPlot, "Фазовый портрет: y(x)"));
+    ui->phasePortretPlot->plotLayout()->addElement(0, 0, 
+        new QCPTextElement(ui->phasePortretPlot, "Фазовый портрет: y(x)"));
 
-    // Добавление графика
-    ui->phasePortretPlot->addGraph();
-    ui->phasePortretPlot->graph(0)->setPen(QPen(Qt::blue));
-    ui->phasePortretPlot->graph(0)->setLineStyle(QCPGraph::lsLine);
-    ui->phasePortretPlot->graph(0)->setScatterStyle(QCPScatterStyle::ssNone);
+    // ВАЖНО: Используем QCPCurve вместо QCPGraph для красивого отображения
+    phasePortraitCurve = new QCPCurve(ui->phasePortretPlot->xAxis, ui->phasePortretPlot->yAxis);
+    phasePortraitCurve->setPen(QPen(Qt::blue, 1.5));
 
     // Включение взаимодействия
     ui->phasePortretPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    
-    // Подключение обработчика колеса мыши для более плавного масштабирования
+
+    // Подключение обработчика колеса мыши
     connect(ui->phasePortretPlot, &QCustomPlot::mouseWheel, this, &VanDerPolGeneratorWindow::onPhasePortretMouseWheel);
 }
 

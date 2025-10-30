@@ -27,7 +27,7 @@
        <string>Модифицированный генератор Ван-дер-Поля:</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
     </item>
@@ -37,7 +37,7 @@
        <string>Параметры</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
     </item>
@@ -52,7 +52,7 @@
        <string>x'' - A1·(1 - x²)·x' + x = A2·cos(A3·t)</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
     </item>
@@ -159,19 +159,6 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="4">
-       <widget class="QLabel" name="lblH">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>h =</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="lblY0">
         <property name="sizePolicy">
@@ -195,19 +182,6 @@
         </property>
         <property name="text">
          <string>A2 = </string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="5">
-       <widget class="QDoubleSpinBox" name="dsbH">
-        <property name="decimals">
-         <number>3</number>
-        </property>
-        <property name="singleStep">
-         <double>0.010000000000000</double>
-        </property>
-        <property name="value">
-         <double>0.010000000000000</double>
         </property>
        </widget>
       </item>
@@ -262,7 +236,33 @@
          <string>Ограничения: A2 &gt; 0, 0.1 ≤ A3 ≤ 10</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignCenter</set>
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="lblH">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>h =</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QDoubleSpinBox" name="dsbH">
+        <property name="decimals">
+         <number>3</number>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
+        </property>
+        <property name="value">
+         <double>0.010000000000000</double>
         </property>
        </widget>
       </item>
