@@ -25,6 +25,7 @@ set(PROJECT_SOURCES
     src/mainwindow.cpp
     src/linear_oscillator_system.cpp
     src/van_der_pol_generator.cpp
+    src/generalized_van_der_pol_generator.cpp
     3rd_party/qcustomplot.cpp
 
     # headers
@@ -32,13 +33,15 @@ set(PROJECT_SOURCES
     src/taskwindow.h
     src/linear_oscillator_system.h
     src/van_der_pol_generator.h
+    src/generalized_van_der_pol_generator.h
     3rd_party/qcustomplot.h
 )
 
 set(FORMS
     ui/mainwindow.ui
     ui/linear_oscillator_system.ui
-    ui//van_der_pol_generator.ui
+    ui/van_der_pol_generator.ui
+    ui/generalized_van_der_pol_generator.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

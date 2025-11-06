@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "linear_oscillator_system.h"
 #include "van_der_pol_generator.h"
+#include "generalized_van_der_pol_generator.h"
 #include "ui_mainwindow.h"
 
 #include <QDesktopServices>
@@ -81,6 +82,7 @@ void MainWindow::initTaskList()
 
     appendTaskRow("Линейная колебательная система", ETaskWindowType::LOS);
     appendTaskRow("Модифицированный генератор Ван-дер-Поля", ETaskWindowType::VDP);
+    appendTaskRow("Обобщённый генератор Ван-дер-Поля", ETaskWindowType::GVDP);
 }
 
 void MainWindow::initTextList()
@@ -104,6 +106,9 @@ QPointer<TaskWindow> MainWindow::createTaskWindow(ETaskWindowType windowType)
             break;
         case ETaskWindowType::VDP:
             resPtr = new vdp::VanDerPolGeneratorWindow;
+            break;
+        case ETaskWindowType::GVDP:
+            resPtr = new gvdp::GeneralizedVanDerPolGeneratorWindow;
             break;
         default:
             return nullptr;

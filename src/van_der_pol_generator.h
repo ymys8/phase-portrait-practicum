@@ -54,11 +54,25 @@ private:
     /// Получить параметры из gui
     Parameters getParametersFromUI() const;
     
+    /// Вычислить данные (отдельно для возможности кэширования)
+    void calculateData(const Parameters& param, 
+                      QVector<double>& tValues, QVector<double>& xValues,
+                      QVector<double>& xValuesPhase, QVector<double>& yValuesPhase);
+    
+    /// Обновить графики с уже вычисленными данными
+    void updatePlots(const QVector<double>& tValues, const QVector<double>& xValues, const QVector<double>& yValues,
+                    const QVector<double>& xValuesPhase, const QVector<double>& yValuesPhase);
+    
     /// Перерисовать график
     void redrawPlot(QCustomPlot *plot, const QVector<double> &xAxisPoints, const QVector<double> &yAxisPoints);
 
     Ui::VanDerPolGeneratorWindow *ui; ///< Форма
     QCPCurve *phasePortraitCurve;     ///< Кривая прозодящая через точки фазового портрета
+    
+    // Кэш для данных (чтобы не пересчитывать при зуме)
+    QVector<double> cachedTValues, cachedXValues;
+    QVector<double> cachedXValuesPhase, cachedYValuesPhase;
+    Parameters cachedParams;  ///< Кэшированные параметры для проверки изменений
 };
 
 }
