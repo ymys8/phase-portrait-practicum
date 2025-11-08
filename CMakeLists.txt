@@ -11,7 +11,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_PREFIX_PATH "C:/Qt/6.3.0/mingw_64/lib/cmake")
+set(CMAKE_PREFIX_PATH "D:/Qt/6.9.3/mingw_64/lib/cmake")
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets PrintSupport)
@@ -25,20 +25,20 @@ set(PROJECT_SOURCES
     src/mainwindow.cpp
     src/linear_oscillator_system.cpp
     src/modernized_relay_scheme.cpp
+    src/van_der_pol_generator.cpp
+    src/generalized_van_der_pol_generator.cpp
     3rd_party/qcustomplot.cpp
 
     # headers
     src/mainwindow.h
     src/taskwindow.h
     src/linear_oscillator_system.h
-    src/modernized_relay_scheme.h
     3rd_party/qcustomplot.h
 )
 
 set(FORMS
     ui/mainwindow.ui
     ui/linear_oscillator_system.ui
-    ui/modernized_relay_scheme.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
