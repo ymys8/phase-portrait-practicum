@@ -3,6 +3,7 @@
 #include "modernized_relay_scheme.h"
 #include "van_der_pol_generator.h"
 #include "generalized_van_der_pol_generator.h"
+#include "osc_2nd_deg_free.h"
 #include "ui_mainwindow.h"
 
 #include <QDesktopServices>
@@ -97,6 +98,7 @@ void MainWindow::initTaskList()
     appendTaskRow("Модернизированная схема Рэлея", ETaskWindowType::MRS);
     appendTaskRow("Модифицированный генератор Ван-дер-Поля", ETaskWindowType::VDP);
     appendTaskRow("Обобщённый генератор Ван-дер-Поля", ETaskWindowType::GVDP);
+    appendTaskRow("Колебания 2 степени свободы", ETaskWindowType::O2DF);
 }
 
 void MainWindow::initTextList()
@@ -126,6 +128,9 @@ QPointer<TaskWindow> MainWindow::createTaskWindow(ETaskWindowType windowType)
             break;
         case ETaskWindowType::GVDP:
             resPtr = new gvdp::GeneralizedVanDerPolGeneratorWindow;
+            break;
+        case ETaskWindowType::O2DF:
+            resPtr = new o2df::Osc2ndDegFree;
             break;
         default:
             return nullptr;

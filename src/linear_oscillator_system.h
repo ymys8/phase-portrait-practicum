@@ -7,9 +7,6 @@ namespace Ui
     class LinearOscillatorSystemWindow;
 }
 
-class QCustomPlot;
-class QCPCurve;
-
 namespace los
 {
 
@@ -49,9 +46,6 @@ private:
 
     /// Получить параметры из gui
     Parameters getParametersFromUI() const;
-    
-    /// Перерисовать график
-    void redrawPlot(QCustomPlot *plot, const QVector<double> &xAxisPoints, const QVector<double> &yAxisPoints);
 
     Ui::LinearOscillatorSystemWindow *ui; ///< Форма
     QCPCurve *phasePortraitCurve;         ///< Кривая прозодящая через точки фазового портрета
