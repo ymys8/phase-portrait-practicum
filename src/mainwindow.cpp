@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "linear_oscillator_system.h"
+#include "physics_pendulum.h"
 #include "ui_mainwindow.h"
 
 #include <QDesktopServices>
@@ -91,6 +92,7 @@ void MainWindow::initTaskList()
     };
 
     appendTaskRow("Линейная колебательная система", ETaskWindowType::LOS);
+    appendTaskRow("Физический маятник", ETaskWindowType::PP);
 }
 
 void MainWindow::initTextList()
@@ -111,6 +113,9 @@ QPointer<TaskWindow> MainWindow::createTaskWindow(ETaskWindowType windowType)
     {
         case ETaskWindowType::LOS:
             resPtr = new los::LinearOscillatorSystemWindow;
+            break;
+        case ETaskWindowType::PP:
+            resPtr = new pp::PhysicsPendulumWindow;
             break;
         default:
             return nullptr;

@@ -24,18 +24,21 @@ set(PROJECT_SOURCES
     src/main.cpp
     src/mainwindow.cpp
     src/linear_oscillator_system.cpp
+    src/physics_pendulum.cpp
     3rd_party/qcustomplot.cpp
 
     # headers
     src/mainwindow.h
     src/taskwindow.h
     src/linear_oscillator_system.h
+    src/physics_pendulum.h
     3rd_party/qcustomplot.h
 )
 
 set(FORMS
     ui/mainwindow.ui
     ui/linear_oscillator_system.ui
+    ui/physics_pendulum.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
