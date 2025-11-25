@@ -41,6 +41,7 @@ set(FORMS
     ui/mainwindow.ui
     ui/linear_oscillator_system.ui
     ui/osc_2nd_deg_free.ui
+    ui/nonlinear_force_resonance2.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
