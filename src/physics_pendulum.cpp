@@ -33,12 +33,6 @@ void PhysicsPendulumWindow::redrawPlots()
     double x = param.phi0; // начальный угол
     double y = param.psi0; // начальная угловая скорость
 
-    auto sgn = [](double value) -> double {
-        if (value > 0) return 1.0;
-        if (value < 0) return -1.0;
-        return 0.0;
-    };
-
     for (int i = 0; i <= k; ++i) {
         tValues.append(t);
         phiValues.append(x);
@@ -98,31 +92,9 @@ void PhysicsPendulumWindow::redrawPlots()
     ui->evolutionXYPlot->graph(1)->setData(tValues, psiValues);
     redrawPlot(ui->evolutionXYPlot);
 
-    double maxX = 0.0;
-    for (double phi : phiValues) {
-        maxX = qMax(maxX, qAbs(phi));
-    }
-
-    double maxY = 0.0;
-    for (double psi : psiValues) {
-        maxY = qMax(maxY, qAbs(psi));
-    }
-
-    const double margin = 1.1;
-    maxX *= margin;
-    maxY *= margin;
-
-    const double minRange = 0.1;
-    maxX = qMax(maxX, minRange);
-    maxY = qMax(maxY, minRange);
-
-    // Устанавливаем симметричные диапазоны
-    ui->phasePortretPlot->xAxis->setRange(-maxX, maxX);
-    ui->phasePortretPlot->yAxis->setRange(-maxY, maxY);
-
     phasePortraitCurve->setData(phiValues, psiValues);
+    TaskWindow::setupZeroCenteredAxes(ui->phasePortretPlot);
     ui->phasePortretPlot->replot();
-    //redrawPlot(ui->phasePortretPlot);
 }
 
 void PhysicsPendulumWindow::initUI()
@@ -182,15 +154,10 @@ pp::Parameters pp::PhysicsPendulumWindow::getParametrsFromUI() const
 {
     Parameters result;
     result.omega0 = ui->dsbOmega0->value();
-    std::cout << "omega0 " << result.omega0 << std::endl;
     result.delta = ui->dsbDelta->value();
-    std::cout << "delta " << result.delta << std::endl;
     result.A = ui->dsbA->value();
-    std::cout << "A " << result.A << std::endl;
     result.rho = ui->dsbRho->value();
-    std::cout << "rho " << result.rho << std::endl;
     result.t = ui->dsbT->value();
-    std::cout << "t " << result.t << std::endl;
     result.phi0 = ui->dsbPhi0->value();
     result.psi0 = ui->dsbPsi0->value();
 
