@@ -50,7 +50,7 @@ void PhysicsPendulumWindow::redrawPlots()
 
         // k1
         double k1x = h * y;
-        double k1y = h * (-2 * param.delta * x * sgn(x - param.phi0)
+        double k1y = h * (-2 * param.delta * y
                           - param.omega0 * sin(x)
                           + param.A * cos(param.rho * t));
 
@@ -60,18 +60,18 @@ void PhysicsPendulumWindow::redrawPlots()
         double t2 = t + 0.5 * h;
 
         double k2x = h * y2;
-        double k2y = h * (-2 * param.delta * x2 * sgn(x2 - param.phi0)
+        double k2y = h * (-2 * param.delta * y2
                           - param.omega0 * sin(x2)
-                          + param.A * cos(param.rho * t));
+                          + param.A * cos(param.rho * t2));
 
         // k3
         double x3 = x + 0.5 * k2x;
         double y3 = y + 0.5 * k2y;
 
         double k3x = h * y3;
-        double k3y = h * (-2 * param.delta * x3 * sgn(x3 - param.phi0)
+        double k3y = h * (-2 * param.delta * y3
                           - param.omega0 * sin(x3)
-                          + param.A * cos(param.rho * t));  // t2 то же самое
+                          + param.A * cos(param.rho * t2));  // t2 то же самое
 
         // k4
         double x4 = x + k3x;
@@ -79,9 +79,9 @@ void PhysicsPendulumWindow::redrawPlots()
         double t4 = t + h;
 
         double k4x = h * y4;
-        double k4y = h * (-2 * param.delta * x4 * sgn(x4 - param.phi0)
+        double k4y = h * (-2 * param.delta * y4
                           - param.omega0 * sin(x4)
-                          + param.A * cos(param.rho * t));
+                          + param.A * cos(param.rho * t4));
 
         x += (k1x + 2*k2x + 2*k3x + k4x) / 6.0;
         y += (k1y + 2*k2y + 2*k3y + k4y) / 6.0;
@@ -98,8 +98,31 @@ void PhysicsPendulumWindow::redrawPlots()
     ui->evolutionXYPlot->graph(1)->setData(tValues, psiValues);
     redrawPlot(ui->evolutionXYPlot);
 
+    double maxX = 0.0;
+    for (double phi : phiValues) {
+        maxX = qMax(maxX, qAbs(phi));
+    }
+
+    double maxY = 0.0;
+    for (double psi : psiValues) {
+        maxY = qMax(maxY, qAbs(psi));
+    }
+
+    const double margin = 1.1;
+    maxX *= margin;
+    maxY *= margin;
+
+    const double minRange = 0.1;
+    maxX = qMax(maxX, minRange);
+    maxY = qMax(maxY, minRange);
+
+    // Устанавливаем симметричные диапазоны
+    ui->phasePortretPlot->xAxis->setRange(-maxX, maxX);
+    ui->phasePortretPlot->yAxis->setRange(-maxY, maxY);
+
     phasePortraitCurve->setData(phiValues, psiValues);
-    redrawPlot(ui->phasePortretPlot);
+    ui->phasePortretPlot->replot();
+    //redrawPlot(ui->phasePortretPlot);
 }
 
 void PhysicsPendulumWindow::initUI()
