@@ -27,6 +27,7 @@ set(PROJECT_SOURCES
     src/van_der_pol_generator.cpp
     src/generalized_van_der_pol_generator.cpp
     src/osc_2nd_deg_free.cpp
+    src/physics_pendulum.cpp
     3rd_party/qcustomplot.cpp
 
     # headers
@@ -34,6 +35,7 @@ set(PROJECT_SOURCES
     src/taskwindow.h
     src/linear_oscillator_system.h
     src/osc_2nd_deg_free.h
+    src/physics_pendulum.h
     3rd_party/qcustomplot.h
 )
 
@@ -41,6 +43,7 @@ set(FORMS
     ui/mainwindow.ui
     ui/linear_oscillator_system.ui
     ui/osc_2nd_deg_free.ui
+    ui/physics_pendulum.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

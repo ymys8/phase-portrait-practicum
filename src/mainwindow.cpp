@@ -4,6 +4,7 @@
 #include "van_der_pol_generator.h"
 #include "generalized_van_der_pol_generator.h"
 #include "osc_2nd_deg_free.h"
+#include "physics_pendulum.h"
 #include "ui_mainwindow.h"
 
 #include <QDesktopServices>
@@ -99,6 +100,7 @@ void MainWindow::initTaskList()
     appendTaskRow("Модифицированный генератор Ван-дер-Поля", ETaskWindowType::VDP);
     appendTaskRow("Обобщённый генератор Ван-дер-Поля", ETaskWindowType::GVDP);
     appendTaskRow("Колебания 2 степени свободы", ETaskWindowType::O2DF);
+    appendTaskRow("Физический маятник", ETaskWindowType::PP);
 }
 
 void MainWindow::initTextList()
@@ -131,6 +133,9 @@ QPointer<TaskWindow> MainWindow::createTaskWindow(ETaskWindowType windowType)
             break;
         case ETaskWindowType::O2DF:
             resPtr = new o2df::Osc2ndDegFree;
+            break;
+        case ETaskWindowType::PP:
+            resPtr = new pp::PhysicsPendulumWindow;
             break;
         default:
             return nullptr;
