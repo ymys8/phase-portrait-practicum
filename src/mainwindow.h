@@ -43,6 +43,8 @@ protected:
 private slots:
     /// Показать окно задания
     void showTaskWindow(const QModelIndex &index);
+    /// Показать окно с ссылкой на репозиторий
+    void showGitInfoWindow();
 
 private:
     /// Инициализировать список с заданиями (левый)

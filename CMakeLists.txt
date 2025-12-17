@@ -13,8 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets PrintSupport)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets PrintSupport)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets PrintSupport)
 
 include(DeployQt)
 
@@ -46,18 +45,10 @@ set(FORMS
     ui/physics_pendulum.ui
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(practicum-phisics
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-        ${FORMS}
-    )
-else()
-    add_executable(${PROJECT_NAME}
-        ${PROJECT_SOURCES}
-        ${FORMS}
-    )
-endif()
+add_executable(${PROJECT_NAME}
+    ${PROJECT_SOURCES}
+    ${FORMS}
+)
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/src,
@@ -91,8 +82,4 @@ if (MSVC)
         "/permissive-"
         "/utf-8"
     )
-endif()
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(${PROJECT_NAME})
 endif()

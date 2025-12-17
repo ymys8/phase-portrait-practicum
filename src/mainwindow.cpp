@@ -26,11 +26,14 @@ MainWindow::MainWindow(QWidget *parent)
     initTaskList();
     initTextList();
 
+    QAction *aShowGit = ui->menuAbout->addAction("Репозиторий");
+    connect(aShowGit, &QAction::triggered, this, &MainWindow::showGitInfoWindow);
+
     connect(ui->listTask, &QListView::doubleClicked, this, &MainWindow::showTaskWindow);
-    connect(ui->listDocs, &QListView::doubleClicked, [](const QModelIndex &index) {
+    connect(ui->listDocs, &QListView::doubleClicked, [](const QModelIndex &index)
+            {
         QString fileName = index.data().toString();
-        QDesktopServices::openUrl(QUrl::fromLocalFile(DOCS_PATH + "\\" + fileName));
-    });
+        QDesktopServices::openUrl(QUrl::fromLocalFile(DOCS_PATH + "\\" + fileName)); });
 }
 
 MainWindow::~MainWindow()
@@ -40,13 +43,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    for(auto task : actualWindows) {
+    for (auto task : actualWindows)
+    {
         if (!task.isNull())
         {
             task->close();
         }
     }
-    
+
     event->accept();
 }
 
@@ -75,12 +79,18 @@ void MainWindow::showTaskWindow(const QModelIndex &index)
     QPointer<TaskWindow> window = createTaskWindow(type);
     if (window == nullptr)
     {
-        QMessageBox::critical(this, "Ошибка при создании окна с заданием", 
-                                tr("Невозможно создать задание: %1").arg(index.data(Qt::DisplayRole).toString()));
+        QMessageBox::critical(this, "Ошибка при создании окна с заданием",
+                              tr("Невозможно создать задание: %1").arg(index.data(Qt::DisplayRole).toString()));
         return;
     }
     actualWindows.insert(type, window);
     window->show();
+}
+
+void MainWindow::showGitInfoWindow()
+{
+    QMessageBox::information(this, "Репозиторий с кодом программы", "Актуальная ссылка на репозиторий:\n"
+                            "https://github.com/ymys8/phase-portrait-practicum");
 }
 
 void MainWindow::initTaskList()
@@ -90,7 +100,7 @@ void MainWindow::initTaskList()
 
     auto appendTaskRow = [model](const QString &name, ETaskWindowType type)
     {
-        QStandardItem* item = new QStandardItem(name);
+        QStandardItem *item = new QStandardItem(name);
         model->appendRow(item);
         model->setData(model->index(model->rowCount() - 1, 0), QVariant::fromValue(type), TASK_TYPE_ROLE);
     };
@@ -119,26 +129,26 @@ QPointer<TaskWindow> MainWindow::createTaskWindow(ETaskWindowType windowType)
 
     switch (windowType)
     {
-        case ETaskWindowType::LOS:
-            resPtr = new los::LinearOscillatorSystemWindow;
-            break;
-        case ETaskWindowType::MRS:
-            resPtr = new mrs::ModernizedRelaySchemeWindow;
-            break;
-        case ETaskWindowType::VDP:
-            resPtr = new vdp::VanDerPolGeneratorWindow;
-            break;
-        case ETaskWindowType::GVDP:
-            resPtr = new gvdp::GeneralizedVanDerPolGeneratorWindow;
-            break;
-        case ETaskWindowType::O2DF:
-            resPtr = new o2df::Osc2ndDegFree;
-            break;
-        case ETaskWindowType::PP:
-            resPtr = new pp::PhysicsPendulumWindow;
-            break;
-        default:
-            return nullptr;
+    case ETaskWindowType::LOS:
+        resPtr = new los::LinearOscillatorSystemWindow;
+        break;
+    case ETaskWindowType::MRS:
+        resPtr = new mrs::ModernizedRelaySchemeWindow;
+        break;
+    case ETaskWindowType::VDP:
+        resPtr = new vdp::VanDerPolGeneratorWindow;
+        break;
+    case ETaskWindowType::GVDP:
+        resPtr = new gvdp::GeneralizedVanDerPolGeneratorWindow;
+        break;
+    case ETaskWindowType::O2DF:
+        resPtr = new o2df::Osc2ndDegFree;
+        break;
+    case ETaskWindowType::PP:
+        resPtr = new pp::PhysicsPendulumWindow;
+        break;
+    default:
+        return nullptr;
     }
 
     return resPtr;
